@@ -1,0 +1,267 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "summary": {
+    "questions": 12,
+    "errors": 0,
+    "avg_correctness": 0.7916666666666666,
+    "avg_citation_accuracy": 0.6875,
+    "avg_model_calls": 13.666666666666666,
+    "avg_tool_calls": 12.0,
+    "avg_total_tokens": 74953.5,
+    "questions_with_no_fetch": 1
+  },
+  "results": [
+    {
+      "question": "What is the latest stable version of Python?",
+      "expected_source": "https://www.python.org/downloads/",
+      "answer": "The latest stable version of Python is Python 3.15.2.\n\nSources:\n- https://www.python.org",
+      "trace": "traces\\2026-11-24_13-36-22.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 1,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 10,
+        "tool_calls": 8,
+        "fetch_calls": 1,
+        "total_tokens": 33369
+      }
+    },
+    {
+      "question": "What license is the Deep Agents library released under?",
+      "expected_source": "https://github.com/langchain-ai/deepagents/blob/main/LICENSE",
+      "answer": "The Deep Agents library (`langchain-ai/deepagents`) is released under the **MIT License**. Copyright for the library is held by LangChain, Inc.\n\nSources:\n- https://github.com/langchain-ai/deepagents/blob/main/LICENSE",
+      "trace": "traces\\2026-11-24_13-36-40.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 1,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 11,
+        "tool_calls": 9,
+        "fetch_calls": 1,
+        "total_tokens": 43911
+      }
+    },
+    {
+      "question": "What is the latest version of the langgraph package on PyPI?",
+      "expected_source": "https://pypi.org/project/langgraph/",
+      "answer": "The latest version of the `langgraph` package on PyPI is **1.2.24**.\n\n### Summary of Latest Version\n- **Package Name:** `langgraph`\n- **Latest Version:** 1.2.24\n- **Description:** Building stateful, multi-actor applications with LLMs.\n- **Python Compatibility:** Python 3.10 or newer.\n\n### Sources\n- [https://pypi.org/project/langgraph](https://pypi.org/project/langgraph)\n- [https://github.com/langchain-ai/langgraph/releases](https://github.com/langchain-ai/langgraph/releases)",
+      "trace": "traces\\2026-11-24_13-37-30.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 2,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [
+          "https://github.com/langchain-ai/langgraph/releases"
+        ],
+        "score": 0.5
+      },
+      "cost": {
+        "model_calls": 13,
+        "tool_calls": 11,
+        "fetch_calls": 1,
+        "total_tokens": 55741
+      }
+    },
+    {
+      "question": "Which language was TIOBE's Programming Language of the Year for 2025?",
+      "expected_source": "https://www.tiobe.com/tiobe-index/",
+      "answer": "TIOBE's Programming Language of the Year for 2025 was **C#** (announced in January 2026). This marks the second time C# has earned this honor in recent years, having previously won in 2023. During 2025, C# saw a significant rating increase of 2.94 percentage points, reaching a 7.39% rating and climbing to the 5th spot in the TIOBE index.\n\n## Sources\n\n* [InfoWorld: C# wins Tiobe Programming Language of the Year honors for 2025](https://www.infoworld.com/article/4112993/c-wins-tiobe-programming-language-of-the-year-honors-for-2025.html)",
+      "trace": "traces\\2026-11-24_13-38-19.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 1,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 10,
+        "tool_calls": 8,
+        "fetch_calls": 1,
+        "total_tokens": 38170
+      }
+    },
+    {
+      "question": "What is the latest stable version of Rust?",
+      "expected_source": "https://github.com/rust-lang/rust/releases/latest",
+      "answer": "The latest stable version of Rust is Rust 1.100.0, which was released on November 12, 2026.\n\nSources:\n- https://releases.rs\n- https://releases.rs/docs/1.100.0",
+      "trace": "traces\\2026-11-24_13-38-56.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 2,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [
+          "https://releases.rs/docs/1.100.0"
+        ],
+        "score": 0.5
+      },
+      "cost": {
+        "model_calls": 18,
+        "tool_calls": 16,
+        "fetch_calls": 2,
+        "total_tokens": 123106
+      }
+    },
+    {
+      "question": "What is the TIOBE index headline for November 2026?",
+      "expected_source": "https://www.tiobe.com/tiobe-index/",
+      "answer": "The TIOBE index headline for November 2026 is **\"Dart surprisingly breaks into the top 20\"**. \n\nKey details accompanying this headline:\n- Dart entered the TIOBE Index Top 20 for the first time, ranking at position #20 with a 0.74% rating, largely driven by Google's Flutter framework.\n- Go overtook Rust, moving Rust out of the top 10 into 11th place.\n- Python remained securely in the #1 position, followed by C, Java, and C++.\n\nSources:\n- [TIOBE Index](https://www.tiobe.com/tiobe-index)",
+      "trace": "traces\\2026-11-24_13-39-47.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 1,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 10,
+        "tool_calls": 8,
+        "fetch_calls": 1,
+        "total_tokens": 38819
+      }
+    },
+    {
+      "question": "What is Python's rating on the TIOBE index this month?",
+      "expected_source": "https://www.tiobe.com/tiobe-index/",
+      "answer": "On the TIOBE index for February 2025, Python is ranked **#1** with a rating of **23.88%**, maintaining a commanding lead over second-place C++ (11.37%) and third-place Java (10.66%).\n\n### Sources\n- https://www.infoworld.com/article/3821294/c-go-and-rust-gaining-popularity-tiobe.html\n- https://github.com/toUpperCase78/tiobe-index-ratings",
+      "trace": "traces\\2026-11-24_13-40-30.json",
+      "correctness": 0.0,
+      "citations": {
+        "cited": 2,
+        "cited_and_fetched": 0,
+        "unfetched_citations": [
+          "https://github.com/touppercase78/tiobe-index-ratings",
+          "https://infoworld.com/article/3821294/c-go-and-rust-gaining-popularity-tiobe.html"
+        ],
+        "score": 0.0
+      },
+      "cost": {
+        "model_calls": 19,
+        "tool_calls": 17,
+        "fetch_calls": 1,
+        "total_tokens": 205348
+      }
+    },
+    {
+      "question": "Until what year is Python 3.15 supported, and what is the latest 3.14 release?",
+      "expected_source": "https://www.python.org/downloads/",
+      "answer": "Python 3.15 is supported until **October 2031** (its official end-of-life date).\n\nAs for Python 3.14, its initial final release (`3.14.0`) was released on **October 7, 2025**. Under the annual release cycle (PEP 602 and PEP 745), it receives bugfix and feature updates, with subsequent point releases following at roughly two-month intervals.\n\nSources:\n- https://devguide.python.org/versions\n- https://peps.python.org/pep-0745/",
+      "trace": "traces\\2026-11-24_13-41-19.json",
+      "correctness": 0.5,
+      "citations": {
+        "cited": 2,
+        "cited_and_fetched": 2,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 14,
+        "tool_calls": 13,
+        "fetch_calls": 2,
+        "total_tokens": 60192
+      }
+    },
+    {
+      "question": "What are the latest stable versions of Python and Rust?",
+      "expected_source": [
+        "https://www.python.org/downloads/",
+        "https://github.com/rust-lang/rust/releases/latest"
+      ],
+      "answer": "The latest stable versions of Python and Rust are as follows:\n\n- **Python**: The latest stable release is **Python 3.15.2** (part of the Python 3.15 bugfix release series).\n- **Rust**: The latest stable release is **Rust 1.99.1**.\n\nSources:\n- https://www.python.org/downloads\n- https://releases.rs\n- https://github.com/rust-lang/rust/releases\n- https://hidekazu-konishi.com/entry/rust_release_and_support_timeline.html",
+      "trace": "traces\\2026-11-24_13-42-12.json",
+      "correctness": 0.5,
+      "citations": {
+        "cited": 4,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [
+          "https://github.com/rust-lang/rust/releases",
+          "https://hidekazu-konishi.com/entry/rust_release_and_support_timeline.html",
+          "https://releases.rs"
+        ],
+        "score": 0.25
+      },
+      "cost": {
+        "model_calls": 15,
+        "tool_calls": 14,
+        "fetch_calls": 1,
+        "total_tokens": 68533
+      }
+    },
+    {
+      "question": "What are the latest versions of Python and the langgraph package?",
+      "expected_source": [
+        "https://www.python.org/downloads/",
+        "https://pypi.org/project/langgraph/"
+      ],
+      "answer": "The latest versions are:\n\n- **Python**: Python 3.14.0 (released October 7, 2025), which includes major new features such as official support for free-threaded Python, deferred evaluation of annotations, template string literals (t-strings), and official macOS/Windows binaries with an experimental JIT compiler.\n- **langgraph**: Version 1.2.24.\n\nSources:\n- https://www.python.org/downloads/release/python-3140\n- https://github.com/langchain-ai/langgraph/releases",
+      "trace": "traces\\2026-11-24_13-42-32.json",
+      "correctness": 0.5,
+      "citations": {
+        "cited": 2,
+        "cited_and_fetched": 2,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 14,
+        "tool_calls": 13,
+        "fetch_calls": 2,
+        "total_tokens": 59214
+      }
+    },
+    {
+      "question": "What will the latest stable Python version be in January 2030?",
+      "expected_source": "https://devguide.python.org/versions/",
+      "answer": "Based on Python's annual release cadence and support lifecycle established by PEP 602 and subsequent release schedule PEPs, Python follows a predictable 12-month release cycle with each new minor version released every October.\n\nIn **January 2030**, the latest stable feature version of Python will be **Python 3.18**, which was released in October 2029 (preceded by Python 3.17 in October 2028, and followed later in 2030 by Python 3.19 in October 2030). \n\n### Sources\n- **PEP 602 \u2013 Annual Release Cycle for Python**: https://peps.python.org/pep-0602\n- **PEP 719 \u2013 Python 3.13 Release Schedule**: https://peps.python.org/pep-0719\n- **PEP 745 \u2013 Python 3.14 Release Schedule**: https://peps.python.org/pep-0745\n- **PEP 790 \u2013 Python 3.15 Release Schedule**: https://peps.python.org/pep-0790\n- **PEP 826 \u2013 Python 3.16 Release Schedule**: https://peps.python.org/pep-0826\n- **Python Developer's Guide (Status of Python versions)**: https://devguide.python.org/versions",
+      "trace": "traces\\2026-11-24_13-43-31.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 6,
+        "cited_and_fetched": 0,
+        "unfetched_citations": [
+          "https://devguide.python.org/versions",
+          "https://peps.python.org/pep-0602",
+          "https://peps.python.org/pep-0719",
+          "https://peps.python.org/pep-0745",
+          "https://peps.python.org/pep-0790",
+          "https://peps.python.org/pep-0826"
+        ],
+        "score": 0.0
+      },
+      "cost": {
+        "model_calls": 19,
+        "tool_calls": 18,
+        "fetch_calls": 0,
+        "total_tokens": 126622
+      }
+    },
+    {
+      "question": "What new features does Python 3.99 add?",
+      "expected_source": "https://www.python.org/downloads/",
+      "answer": "Python 3.99 as a major new version does not exist. However, **Python 3.9.9** was released on November 15, 2021, as a patch/maintenance release in the Python 3.9 series. \n\nKey details regarding Python 3.9.9 and the Python 3.9 release series:\n- **Python 3.9.9 Purpose:** It was released out-of-schedule as an expedited hotfix to address a specific `argparse` regression introduced in Python 3.9.8 (BPO-45235) that caused complex command-line tools to fail when recognizing sub-commands.\n- **Key Features of the Python 3.9 Series:**\n  - **PEP 584:** Added dictionary union operators (`|` and `|=`).\n  - **PEP 585:** Type hinting generics in standard collections (e.g., `list[int]` instead of `typing.List[int]`).\n  - **PEP 615:** Added the `zoneinfo` module for IANA time zone database support without external dependencies.\n  - **PEP 616:** Added string methods `str.removeprefix()` and `str.removesuffix()`.\n  - **PEP 617:** Introduced a new PEG parser for CPython, replacing the old LL(1) parser.\n- **Lifecycle Status:** Python 3.9 reached its official End-of-Life (EOL) upstream on October 31, 2025.\n\nSources:\n- https://www.python.org/downloads/release/python-399",
+      "trace": "traces\\2026-11-24_13-43-53.json",
+      "correctness": 1.0,
+      "citations": {
+        "cited": 1,
+        "cited_and_fetched": 1,
+        "unfetched_citations": [],
+        "score": 1.0
+      },
+      "cost": {
+        "model_calls": 11,
+        "tool_calls": 9,
+        "fetch_calls": 1,
+        "total_tokens": 46417
+      }
+    }
+  ]
+}

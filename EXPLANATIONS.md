@@ -365,3 +365,82 @@ I downloaded each source page in full (without the agent's 4,000-character cut) 
 - There are no hard multi-hop questions. This set mostly tests whether the agent looks things up and cites pages it read.
 
 **Check for you:** pick any question and say what a good answer looks like, and what would make the score wrong even though the answer is right.
+
+---
+
+## Step 11: Record the baseline
+
+**What was done**
+- Ran `python evals/run_evals.py` once on all 12 questions, with no code changes. It took a few minutes, used 641,823 tokens and finished with no errors.
+- Wrote `EVALS.md`: the date, model, the three scores, a per-question table, the three worst questions, and the most common failure. No code was changed.
+
+**What the numbers say**
+- **Correctness 0.92.** 11 of 12 answers contained every key fact. The one miss was question 11, and that one is partly a question-design problem (see below).
+- **Citation accuracy 0.27.** On average, only about a quarter of the URLs in an answer were pages the agent had actually fetched.
+- **Cost:** about 12 model calls and 53,500 tokens per question, with the two-source question (9) the highest at 103,358 tokens.
+
+**Why the two scores disagree**
+The agent is right most of the time because search snippets often contain the answer. It then lists every URL from its notes as a source, even for pages it never opened. So correctness is high and citation accuracy is low. This is the pattern we saw by eye in Steps 5, 6 and 7, and now it has a number on it.
+
+**Two checks I made before writing the analysis**
+1. **Are the unfetched citations made up?** No. All 35 appeared in some search result. They are unread, not invented.
+2. **Is the low score caused by my URL matching?** No. In question 1 the agent fetched `python.org` (the home page) but cited `python.org/downloads`. The pages really are different.
+
+**The most common failure, in one sentence:** the agent answers from search snippets and cites pages it never read.
+
+**Honest limits of this baseline**
+- It is one run. LLM runs vary, so a later difference of a few points may be noise, which is worth remembering in Step 12.
+- Question 11 scored 0 because the agent confidently predicted "Python 3.18" from the annual release cycle. That is a reasonable answer, so the question is a weak "no clear answer" test.
+- The 0.27 punishes the orchestrator for listing every URL in its notes, even when the answer is true.
+
+**Check for you:** open two or three files in `traces/` (the paths are in the results file) and see whether you agree with the failure analysis. Then say what the most common failure is, in one sentence.
+
+---
+
+## Step 12: Make one change and measure it
+
+**What was done**
+1. Picked the change from the baseline's most common failure: citing pages that were never fetched. The citations came from the sub-agents' notes, so I changed one line of `SUBAGENT_PROMPT`: record only URLs of pages fetched with `fetch_url`, never URLs seen only in search results, and fetch at least one page first.
+2. Re-checked the time-sensitive facts (Python, Rust, langgraph, TIOBE). Nothing had changed, so the questions were still valid.
+3. Reran all 12 questions and compared with the baseline in `EVALS.md`.
+4. Read the traces of the questions that got worse.
+5. Reverted the change with `git checkout -- agent.py`, because it hurt the scores.
+
+**The result**
+- It worked on its target: citation accuracy 0.27 to 0.69, and unfetched citations 35 to 13.
+- It hurt correctness: 0.92 to 0.79 as scored, 0.71 once one false positive is corrected.
+- It cost about 40% more tokens per question.
+
+**Why a "fix" can make things worse**
+The rule forced the agent to fetch pages, but nothing made it fetch the right ones. In question 7 it fetched an old copy of the TIOBE data and trusted it. In questions 8, 9 and 10 the fetched pages didn't hold the current fact, or the fact sat past the 4,000-character cut. At baseline the answers were often right because the search snippets held the current number. Forcing a fetch took that away without adding a better source. Without the second metric, the citation gain alone would have looked like a clear win.
+
+**Two other lessons**
+- **A scorer can be fooled.** Question 11 jumped from 0.00 to 1.00 only because `predict` is a substring of "predictable". Reading the answer showed it hadn't improved at all. Read the changed cases before trusting a number.
+- **One run is weak evidence.** I ran each version once. The failures in questions 7 and 9 had visible causes, so I trust the verdict, but a repeat run of each would show how much is noise.
+
+**Why I reverted**
+The step says to revert a change that hurts the scores, and wrong answers are worse than unread citations. `EVALS.md` records the exact line that was tried, so it can be reapplied. Combined with a better `fetch_url` and a preference for official sources, it might turn into a gain.
+
+**Check for you:** compare the before and after numbers yourself and say whether you agree with the verdict. Then explain in your own words why forcing the agent to fetch pages did not make its answers better.
+
+---
+
+## Step 13: The README and the demo
+
+**What was done**
+The README had been built up step by step, so this step was a review, not a rewrite. I read it against the code and against `EVALS.md` and fixed what had gone stale:
+- **Outdated statements.** Known limitations still said the evals "will measure" things and that Step 12 "is where a fix is tried". Step 10 still said "not yet run". All corrected.
+- **Duplicated and scattered text.** The limitations were one long list with overlapping points. They are now grouped under "Agent behavior" and "Evals".
+- **The results.** The baseline and the Step 12 change were in separate paragraphs. They are now one table, with the main finding and the reason the change was reverted written underneath.
+- **Added:** a summary at the top that says what the project shows, including the result that the first fix made things worse; the exact package versions it was tested with; and a "What I would build next" section.
+- The file is about 270 lines, under the 300-line limit in the guide.
+
+**The rule I kept to:** no invented numbers. Every score in the README comes from `EVALS.md` or the saved result files. Where something wasn't measured (run-to-run noise), the README says so.
+
+**Why the README leads with a negative result**
+A reader, such as a hiring manager, learns more from "I measured a real problem, tried a fix, saw it hurt, and reverted it" than from a project that claims everything works. It is also the honest summary of what the evals showed.
+
+**What is yours to do (the demo)**
+Record a 2 to 3 minute screen recording that shows: one question running (the live step-by-step output), the trace file in `traces/`, the approve / edit / reject prompt and the saved `report.md`, and the eval summary. I can't make that, because it needs your screen. When you have it, I'll add a link under a "Demo" heading in the README.
+
+**Check for you:** read the README as if you had never seen the project. Rewrite anything you can't explain, and be ready to answer "what would you change next?" in a minute (the "What I would build next" list is a starting point).

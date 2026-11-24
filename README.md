@@ -2,7 +2,14 @@
 
 A research agent that takes a question, searches the web, reads sources, and returns a short answer with citations (source URLs). A person reviews the answer before it is saved.
 
-It is built step by step, following `build_step.md`, as a way to learn how agents work. This README is updated after every step. When the project is finished, it is the project's documentation. For plain-language explanations of why each step was done, see `EXPLANATIONS.md`.
+What it shows:
+- An orchestrator agent that splits a question into subtopics and delegates each to a researcher sub-agent (built on the Deep Agents harness, LangGraph underneath, Google Gemini as the model).
+- A shared `workspace/` where sub-agents write notes, a full trace of every run, and a human approve / edit / reject step before anything is saved.
+- An eval suite with 12 questions that scores correctness, citation accuracy and cost, plus a recorded baseline and one measured experiment.
+
+The headline result is a negative one: the agent usually answers correctly but often cites pages it never read, and the first fix tried made answers worse (see [Evals](#evals)).
+
+It was built step by step, following `build_step.md`, as a way to learn how agents work. The build log is at the bottom of this file, and `EXPLANATIONS.md` explains in plain language what each step did and why. Developed and tested on Windows with Python 3.13.1.
 
 ## Status
 
@@ -18,10 +25,10 @@ It is built step by step, following `build_step.md`, as a way to learn how agent
 | 7 | Sub-agents | Done |
 | 8 | Human approval before saving | Done |
 | 9 | Eval questions | Done (12 questions, drafted together, facts verified 2026-11-23) |
-| 10 | Eval runner | Done (built and smoke-tested; not yet run on the real questions) |
-| 11 | Baseline results | Not started |
-| 12 | One change, measured | Not started |
-| 13 | Final README and demo | Not started |
+| 10 | Eval runner | Done |
+| 11 | Baseline results | Done (see `EVALS.md`) |
+| 12 | One change, measured | Done (change reverted, see `EVALS.md`) |
+| 13 | Final README and demo | README done; demo recording is yours to make |
 | 14 | Cleanup | Not started |
 
 ## How it works
@@ -65,6 +72,8 @@ python -m venv .venv
 pip install deepagents langgraph python-dotenv google-genai tavily-python httpx trafilatura
 ```
 
+Versions this was tested with: `deepagents` 0.7.41, `langgraph` 1.2.24, `langchain-google-genai` 4.5.2 (installed with `deepagents`), `google-genai` 3.6.1, `tavily-python` 0.8.5, `httpx` 0.28.1, `trafilatura` 2.4.0, `python-dotenv` 1.2.4. These libraries change quickly, so if something breaks, check these versions first.
+
 Create a `.env` file in the project folder (it is git-ignored):
 
 ```
@@ -106,7 +115,8 @@ Research agent/
 ├── evals/
 │   ├── run_evals.py   # Runs the agent on every question and scores it (Step 10)
 │   ├── questions.json # The 12 test questions (Step 9)
-│   └── results/       # One JSON result file per eval run
+│   └── results/       # One JSON result file per eval run (the baseline is committed with the docs)
+├── EVALS.md           # Eval results and failure analysis (Steps 11-12)
 ├── SPEC.md            # What we are building and what is out of scope
 ├── CLAUDE.md          # Working rules for Claude Code
 ├── build_step.md      # The step-by-step build guide
@@ -122,16 +132,20 @@ Research agent/
 
 ## Known limitations
 
-These are observed in the traces so far and will be measured by the evals.
-
-- **The agent often skips `fetch_url`.** In several runs it answered from search snippets and cited pages it never read, even though the prompt tells it to fetch pages. Citations may therefore not reflect pages actually read. Step 10 scores this, and Step 12 is where a fix is tried.
+**Agent behavior**
+- **Citations are often unread pages.** The agent usually answers from search snippets and lists URLs it never fetched (baseline citation accuracy 0.27, and 3 of 12 questions made no fetch call). All 35 unfetched citations in the baseline did appear in search results, so they are unread, not invented. The one fix tried raised the score to 0.69 but made answers worse, so it was reverted and the problem is open.
+- **A fetch is not proof of a good source.** Agents can fetch a stale or third-party page. `fetch_url` also keeps only the first 4,000 characters, so a fact further down a page can be missed.
+- **Answers can be confidently wrong.** In the baseline, the question about the future ("latest Python in January 2030") got a flat "Python 3.18" with no hedge.
 - **The 3 sub-agent limit is a prompt instruction**, not a hard cap. The docs describe no setting for it.
-- **Fetched pages are cut to 4,000 characters**, so an answer that sits further down a page can be missed.
-- **The pause lives in memory** (`MemorySaver`). Closing the terminal at the approval prompt loses the run.
 - **The model sometimes calls `save_report` twice**, which gives you a second draft to review.
-- **Eval scoring is simple text matching**, so correct answers phrased differently can be marked wrong, and a fetched page does not prove the cited claim is on it.
+- **The approval pause lives in memory** (`MemorySaver`). Closing the terminal at the prompt loses the run.
+
+**Evals**
+- **Scoring is simple text matching.** A correct answer phrased differently from the `key_facts` can score low, and `predict` also matches "predictable", which inflated one score in the second run (question 11).
+- **One run per version.** Run-to-run variation is unmeasured, so small differences may be noise.
+- **The set is small (12) and time-sensitive.** Several expected answers (versions, TIOBE's monthly rating) go stale. The two no-clear-answer questions score unreliably.
 - **Eval runs overwrite `report.md`**, because approval is switched off and every answer is saved.
-- **No evaluation results yet.** Scores will be added after Steps 10 to 12. No numbers are claimed here before then.
+- **A full eval run costs real money:** about 640,000 to 900,000 tokens for 12 questions.
 
 ## Evals
 
@@ -149,11 +163,36 @@ The question set (`evals/questions.json`, 12 entries) has 7 easy single-fact que
 
 Many answers change over time, so **the set was verified on 2026-11-23** and some facts (latest Python, Rust and langgraph versions, TIOBE's monthly rating) will go stale. Re-check them before a new baseline run. The two no-clear-answer questions use loose `key_facts` (`predict`; `3.99` and `does not exist`) and will score unreliably.
 
-The text match is strict: a correct answer phrased differently from your `key_facts` can score low. Baseline numbers will be added after Step 11.
+### Results
+
+All numbers are from `EVALS.md` and `evals/results/`. Each version was run once on the 12 questions with `gemini-3.5-flash-lite`.
+
+| Measure | Baseline (2026-11-23) | With the Step 12 change (2026-11-24, reverted) |
+|---------|-----------------------|-----------------------------------------------|
+| Correctness | 0.92 (11 of 12 fully correct) | 0.79 as scored, 0.71 after fixing one scoring false positive |
+| Citation accuracy | 0.27 | 0.69 |
+| Unfetched citations | 35 | 13 |
+| Questions with no fetch call | 3 | 1 |
+| Model calls per question | 12.25 | 13.67 |
+| Tokens per question | about 53,500 | about 75,000 |
+
+- **Main finding:** correctness is high because search snippets often hold the answer, while citation accuracy is low because the agent lists sources it never opened.
+- **The Step 12 change** required sub-agents to record only URLs of pages they fetched. It did raise citation accuracy, but answers got worse: in traces the agent fetched stale or incomplete pages (for example a February 2025 copy of the TIOBE data) and trusted them. It cost about 40% more tokens, so it was reverted.
+- The per-question tables, the three worst questions and the failure analysis are in `EVALS.md`.
+
+## What I would build next
+
+1. **Fix the scorer first:** match key facts on word boundaries, and decide how to score the no-clear-answer questions (for example, check for hedging language, or use an LLM judge).
+2. **Measure noise:** rerun the baseline two or three times, so a difference between versions can be compared with the run-to-run spread.
+3. **Improve `fetch_url`:** return more of a page, or a chosen section, so facts below the 4,000-character cut can be read.
+4. **Prefer official sources:** steer the researchers toward a project's own site (python.org, rust-lang.org, pypi.org), then retry the "record only fetched URLs" rule on top of that.
+5. **Enforce limits in code,** not prompts: a hard cap on sub-agents and a required fetch before a source can be cited.
+6. **Persist the approval pause** with a database-backed checkpointer, so a run can be resumed after the terminal is closed.
+7. **A bigger, harder question set,** including multi-hop questions, with facts that don't go stale.
 
 ## Out of scope
 
-A web UI, a database, deployment, and an LLM judge for scoring (the first evals use simple text matching).
+A web UI, a database, deployment, and an LLM judge for scoring (the evals use simple text matching).
 
 ## Build log
 
@@ -216,3 +255,16 @@ What was done in each step, in order. Details and reasoning are in `EXPLANATIONS
 - Added `evals/run_evals.py`: runs the agent on each question with approval switched off and scores correctness, citation accuracy and cost. See the Evals section.
 - Small change to `agent.py`: `run_with_trace` takes `auto_approve` and `verbose` options, and `run_question` / `final_answer` were split out of `main`. Interactive use is unchanged.
 - Tested the scoring functions with fixed inputs, then ran a 2-question throwaway file end to end. No questions file existed yet, so there is no baseline. The smoke-test results were deleted.
+
+### Step 11: Baseline
+- Ran `python evals/run_evals.py` on all 12 questions with no code changes: no errors, correctness 0.92, citation accuracy 0.27, about 53,500 tokens per question (641,823 in total).
+- Wrote `EVALS.md` with the summary, a per-question table, the three lowest-scoring questions and the most common failure (answering from search snippets and citing pages never fetched).
+
+### Step 12: One change, measured, and reverted
+- Changed one line of the researcher sub-agent's prompt: record only URLs of pages fetched with `fetch_url`, and fetch at least one page before writing notes.
+- Reran all 12 questions. Citation accuracy went from 0.27 to 0.69, but correctness went from 0.92 to 0.79 (0.71 corrected) and tokens per question from about 53,500 to about 75,000. Traces showed answers drawn from stale or incomplete fetched pages, such as a February 2025 copy of the TIOBE data.
+- The change hurt the answers, so `agent.py` was reverted to the baseline version. The comparison, the reasons and next ideas are in `EVALS.md`.
+
+### Step 13: README
+- Reviewed this README against the code and `EVALS.md`. Fixed outdated statements, merged the limitations into one list, rebuilt the Evals results as a single baseline-versus-change table, added the tested package versions and a "What I would build next" section.
+- Every number in this file comes from `EVALS.md` or `evals/results/`. The demo recording is not included yet.
