@@ -1,0 +1,68 @@
+[
+  {
+    "question": "What is the latest stable version of Python?",
+    "key_facts": ["3.15"],
+    "expected_source": "https://www.python.org/downloads/"
+  },
+  {
+    "question": "What license is the Deep Agents library released under?",
+    "key_facts": ["MIT"],
+    "expected_source": "https://github.com/langchain-ai/deepagents/blob/main/LICENSE"
+  },
+  {
+    "question": "What is the latest version of the langgraph package on PyPI?",
+    "key_facts": ["1.2.24"],
+    "expected_source": "https://pypi.org/project/langgraph/"
+  },
+  {
+    "question": "Which language was TIOBE's Programming Language of the Year for 2025?",
+    "key_facts": ["C#"],
+    "expected_source": "https://www.tiobe.com/tiobe-index/"
+  },
+  {
+    "question": "What is the latest stable version of Rust?",
+    "key_facts": ["1.100"],
+    "expected_source": "https://github.com/rust-lang/rust/releases/latest"
+  },
+  {
+    "question": "What is the TIOBE index headline for November 2026?",
+    "key_facts": ["Dart"],
+    "expected_source": "https://www.tiobe.com/tiobe-index/"
+  },
+  {
+    "question": "What is Python's rating on the TIOBE index this month?",
+    "key_facts": ["20.86"],
+    "expected_source": "https://www.tiobe.com/tiobe-index/"
+  },
+  {
+    "question": "Until what year is Python 3.15 supported, and what is the latest 3.14 release?",
+    "key_facts": ["2031", "3.14.10"],
+    "expected_source": "https://www.python.org/downloads/"
+  },
+  {
+    "question": "What are the latest stable versions of Python and Rust?",
+    "key_facts": ["3.15", "1.100"],
+    "expected_source": [
+      "https://www.python.org/downloads/",
+      "https://github.com/rust-lang/rust/releases/latest"
+    ]
+  },
+  {
+    "question": "What are the latest versions of Python and the langgraph package?",
+    "key_facts": ["3.15", "1.2.24"],
+    "expected_source": [
+      "https://www.python.org/downloads/",
+      "https://pypi.org/project/langgraph/"
+    ]
+  },
+  {
+    "question": "What will the latest stable Python version be in January 2030?",
+    "key_facts": ["predict"],
+    "expected_source": "https://devguide.python.org/versions/"
+  },
+  {
+    "question": "What new features does Python 3.99 add?",
+    "key_facts": ["3.99", "does not exist"],
+    "expected_source": "https://www.python.org/downloads/"
+  }
+]
