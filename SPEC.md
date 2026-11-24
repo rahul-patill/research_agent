@@ -24,6 +24,10 @@ Given a question, the agent plans, searches the web, reads sources, and returns 
   - A Gemini SDK: `google-genai` for the hand-written loop (Steps 2-3), and `langchain-google-genai` if Deep Agents needs it (Step 4)
   - `httpx` (download pages) and `trafilatura` (extract readable text) for `fetch_url`
   - `tavily-python` for `web_search` (needs `TAVILY_API_KEY` in `.env`)
+  - `fastapi` and `uvicorn` for the replay viewer in `demo/` (added after Step 13, approved by the project owner)
+
+## Replay viewer (added after Step 13)
+A small FastAPI app in `demo/` that replays recorded runs of the agent as a timeline, with the final answer, a citation check and the eval comparison. It serves pre-built JSON files and a static page. It does not import the agent, call any model or need any API key, so it costs no tokens and is safe to host. Visitors cannot ask their own questions.
 
 ## Out of scope for this version
 These come in later steps and must not be built early:
@@ -32,4 +36,4 @@ These come in later steps and must not be built early:
 - Human approval before saving (Step 8)
 - An evaluation suite (Steps 9-12)
 - Run tracing to files (Step 5)
-- Any web UI, database, or deployment
+- A live web UI where visitors run the agent themselves (it would spend tokens and need rate limits), a database, or hosting the agent itself. The recorded-run replay viewer is in scope, see below.

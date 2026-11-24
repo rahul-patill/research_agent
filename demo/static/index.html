@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Agent Trace Viewer</title>
+  <meta name="description" content="Replays of real runs of a research agent: every search, page and note, with the receipts.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    // Apply a saved theme before first paint, so the page never flashes the wrong one.
+    try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="#" aria-label="Research Agent trace viewer, home">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 9v6M16 15l-7 8M16 15l7 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="16" cy="8" r="3.4" fill="var(--a-orch)"/>
+          <circle cx="8.5" cy="24" r="3.4" fill="var(--a-r1)"/>
+          <circle cx="23.5" cy="24" r="3.4" fill="var(--a-r2)"/>
+        </svg>
+        <span class="brand-name">Research Agent</span>
+        <span class="brand-sub">Trace viewer</span>
+      </a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Watch a research agent work.</h1>
+        <p class="lede">These are replays of real runs of an agent that searches the web, reads sources and writes a cited answer. Every search, page and note is on the record, so you can see what it did and judge whether to trust it.</p>
+        <p class="status"><span class="dot" aria-hidden="true"></span>Recorded runs only. No model is called, so browsing costs nothing.</p>
+      </section>
+
+      <section aria-labelledby="examples-title">
+        <h2 id="examples-title" class="eyebrow">Pick a run</h2>
+        <div id="examples" class="cards" role="list"></div>
+      </section>
+
+      <section id="run" class="run" aria-live="polite" hidden></section>
+
+      <section id="why" class="why" aria-labelledby="why-title" hidden></section>
+    </main>
+
+    <footer class="foot">
+      <p>Built with Deep Agents, LangGraph and Google Gemini. Every replay is a real trace saved from a run, nothing is simulated. Live questions are switched off to keep token costs at zero.</p>
+    </footer>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

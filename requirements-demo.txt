@@ -1,0 +1,4 @@
+# Everything the replay viewer (demo/server.py) needs to run. It does not need the agent's
+# libraries or any API key. These are the versions it was tested with.
+fastapi==0.165.0
+uvicorn==0.54.0

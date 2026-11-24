@@ -1,0 +1,15 @@
+# Render Blueprint: hosts the replay viewer (demo/) as a free web service.
+# It serves recorded runs only: no model is called and no API key is needed.
+services:
+  - type: web
+    name: research-agent-viewer
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-demo.txt
+    startCommand: python demo/server.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: HOST
+        value: 0.0.0.0

@@ -444,3 +444,73 @@ A reader, such as a hiring manager, learns more from "I measured a real problem,
 Record a 2 to 3 minute screen recording that shows: one question running (the live step-by-step output), the trace file in `traces/`, the approve / edit / reject prompt and the saved `report.md`, and the eval summary. I can't make that, because it needs your screen. When you have it, I'll add a link under a "Demo" heading in the README.
 
 **Check for you:** read the README as if you had never seen the project. Rewrite anything you can't explain, and be ready to answer "what would you change next?" in a minute (the "What I would build next" list is a starting point).
+
+---
+
+## Extra: The replay viewer (FastAPI backend and a web page)
+
+**Why this was added**
+You wanted people to be able to see what was built. A page where anyone can type questions would spend your tokens and keys, so this version replays real recorded runs instead. Browsing costs nothing, and nothing on the page is simulated.
+
+**The three pieces**
+1. **`demo/build_examples.py`** (you run it by hand, when you want to change the examples). It reads three saved traces and the eval results, and writes small JSON files into `demo/examples/`. For each run it:
+   - turns the raw trace events into steps and attaches each result to the call that produced it (so a search shows its result list, and a fetch shows its page text);
+   - merges the approval step into one clear entry (after you approve, the framework replays the proposed call, so it appeared twice in the raw trace);
+   - works out the citation check: each URL cited in the answer, and whether the agent opened it, using the same functions as the evals.
+2. **`demo/server.py`**, the FastAPI backend. It has four read-only endpoints (`/api/examples`, `/api/examples/{id}`, `/api/summary`, `/api/health`) and serves the page. It only reads the JSON files, never imports the agent, and needs no API key. An example id must match one in the index, so a request like `/api/examples/../../.env` gets a 404 (I tested it).
+3. **`demo/static/`**, the page: `index.html`, `style.css`, `app.js`, with no framework or build step. The script fetches the examples from the API, draws the cards, and replays a run one step at a time. It builds everything with `textContent`, so text copied from a web page inside a trace can't inject HTML into the viewer.
+
+**How the front end connects to the back end**
+When the page loads, `app.js` calls `/api/examples` and `/api/summary`. Clicking a card sets the URL hash (`#stale-source`), which loads `/api/examples/stale-source` and plays it. The hash also means a link to one run can be shared.
+
+**The three example runs**
+- **Latest Python version:** a simple lookup, ending in the approval step.
+- **Comparing agent evaluation methods:** two researchers working in parallel, with their steps interleaved.
+- **A stale source:** the agent fetched an old copy of the TIOBE data and answered wrongly. It is the page's clearest example of why the evals exist.
+
+**Design choices**
+Minimal and cool-toned, with one teal accent, hairline borders, and one color per agent so parallel work is easy to follow. It has light and dark themes (system default plus a toggle), respects reduced-motion settings, and works at phone width. I used the design principles from the artifact design guidance (color tokens for both themes, responsive gutters, no templated looks), though not its publishing rules, since this page isn't published to claude.ai.
+
+**What I checked, in a real browser**
+- The page loads with no console errors, in dark and light themes.
+- Playback, "Skip to the end", the final answer, the citation check and the eval comparison table all work.
+- At 400px width the outcome panels overflowed by about 29px, because long URLs stopped the grid items from shrinking. I fixed it and re-measured: no horizontal overflow.
+- Not tested: real phone hardware, or browsers other than Chrome.
+
+**Things worth knowing**
+- **Port:** the viewer uses port 8000. That port was occupied by the dev server of another project of yours (the Donation Website backend, `uvicorn app.main:app --reload --port 8000`, running since 20 Nov). You asked me to stop it, so I did. To start it again: in `F:\Projects\Donation Website\backend`, run `.\.venv\Scripts\uvicorn app.main:app --reload --port 8000`, and set `PORT` for one of the two apps, because they can't share a port.
+- **No live questions.** The page says so, rather than showing a box that does nothing.
+- **The "Never opened" label** means the exact cited URL was not fetched. In the stale-source run the agent did open a nearby GitHub page, just not the URL it cited, which is the point.
+- **Hosting:** the server is safe to host because it has no keys and spends no tokens. Before pushing the repo anywhere public, Step 14 (the secrets check on the repo and its history) should still be done.
+
+**How to run it:** `python demo/server.py`, then open http://127.0.0.1:8000.
+
+---
+
+## Extra: Hosting the replay viewer
+
+**What was done**
+- Scanned the whole git history for secrets before anything goes public. Result: no API keys in any commit, and `.env` was never tracked. (This is the main check from Step 14.)
+- Added `requirements-demo.txt` with only `fastapi` and `uvicorn`, pinned to the tested versions.
+- Added `render.yaml`, a Render Blueprint that deploys `demo/server.py` as a free web service, with `/api/health` as the health check.
+- Proved the deploy is self-contained: I copied only `demo/` and the requirements file into a fresh folder, created a new virtual environment, installed only those two packages, and ran the server. Every endpoint returned 200, and none of the agent's libraries (`deepagents`, `langgraph`, `google-genai`, `tavily`) were installed.
+
+**Why the viewer is safe to host**
+It has no API keys, makes no model calls, and only reads three small JSON files and a static page. A visitor can't make it spend a token, and an example id must match the index, so it can't be used to read other files (a path-traversal attempt returned 404).
+
+**Why Render**
+The viewer is a plain Python web server, and Render can deploy one directly from a GitHub repo with a free plan and a config file. Other options would also work: Hugging Face Spaces, Fly.io, Railway, or Vercel.
+
+**The free-plan tradeoff**
+A free Render web service goes to sleep after a period of inactivity and takes roughly a minute to wake on the next visit. For a link on a resume, that first-load delay is worth knowing about. The options later are a paid plan (a small monthly cost that keeps it awake) or an uptime pinger. I haven't tested either.
+
+**What I could not do from here**
+- No GitHub CLI is installed and the repo has no remote, so creating the GitHub repo and pushing needs you. A public repo and a Render account are yours to create.
+- `render.yaml` follows Render's Blueprint format, but I haven't run it on Render, so the first deploy may need a small adjustment.
+
+**The steps for you**
+1. Commit the viewer, the README and the deploy files (ask me and I'll do it).
+2. Create an empty repository on GitHub (no README or license added by GitHub), then push:
+   `git remote add origin https://github.com/<you>/<repo>.git`, then `git branch -M main`, then `git push -u origin main`.
+3. On render.com, sign in with GitHub, choose **New, Blueprint**, select the repo, and apply. When the build finishes, Render gives you a URL like `https://research-agent-viewer.onrender.com`.
+4. Open `/api/health` on that URL to confirm it works, then the main page.
